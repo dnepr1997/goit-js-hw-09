@@ -8,11 +8,18 @@ import "flatpickr/dist/flatpickr.min.css";
 
 const inputHendle = document.querySelector('#datetime-picker')
 const btn = document.querySelector('[data-start]')
-const days = document.querySelector('[data-days]')
-const hours = document.querySelector('[data-hours]')
-const minutes = document.querySelector('[data-minutes]')
-const seconds = document.querySelector('[data-seconds]')
+const day = document.querySelector('[data-days]')
+const hour = document.querySelector('[data-hours]')
+const minute = document.querySelector('[data-minutes]')
+const second = document.querySelector('[data-seconds]')
 
+
+let intervalId = null;
+let selectedDate = null;
+let currentDate = null;
+let timeToEnd = 0;
+
+btn.disabled = true
 
 const options = {
   enableTime: true,
@@ -20,13 +27,51 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    console.log(selectedDates[0]);
+     selectedDate = selectedDates[0].getTime()
+     newDate = new Date().getTime()
+    if (newDate > selectedDate) {
+      Notiflix.Notify.failure("Please choose a date in the future");
+    } else {
+      btn.disabled = false
+
+    }
   },
 };
 
 flatpickr(inputHendle, options);
 
 
+btn.addEventListener('click', clickBtn)
+
+function clickBtn() {
+  intervalId = setInterval(() => {
+    currentDate = new Date().getTime();
+    if (selectedDate - currentDate <= 1000) {
+      clearInterval(intervalId);
+      btn.disabled = true;
+      inputHendle.disabled = false;
+      return;
+    } else {
+      btn.disabled = true;
+      inputHendle.disabled = true;
+      currentDate += 1000;
+      timeToEnd = selectedDate - currentDate;
+      convertMs(timeToEnd);
+    }
+  }, 1000);
+}
+
+function updateClock({ days, hours, minutes, seconds }) {
+  day.textContent = days;
+  hour.textContent = hours;
+  minute.textContent = minutes;
+  second.textContent = seconds;
+}
+
+
+function addLeadingZero(value) {
+  return String(value).padStart(2, '0');
+}
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -36,18 +81,16 @@ function convertMs(ms) {
   const day = hour * 24;
 
   // Remaining days
-  const days = Math.floor(ms / day);
+  const days = addLeadingZero(Math.floor(ms / day));
   // Remaining hours
-  const hours = Math.floor((ms % day) / hour);
+  const hours = addLeadingZero(Math.floor((ms % day) / hour));
   // Remaining minutes
-  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const minutes = addLeadingZero(Math.floor(((ms % day) % hour) / minute));
   // Remaining seconds
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+  const seconds = addLeadingZero(Math.floor((((ms % day) % hour) % minute) / second));
 
+  updateClock({ days, hours, minutes, seconds })
   return { days, hours, minutes, seconds };
 }
 
-console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
-console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
-console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
 
