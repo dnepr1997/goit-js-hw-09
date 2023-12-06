@@ -13,7 +13,7 @@ const hour = document.querySelector('[data-hours]')
 const minute = document.querySelector('[data-minutes]')
 const second = document.querySelector('[data-seconds]')
 
-
+let newDate = null;
 let intervalId = null;
 let selectedDate = null;
 let currentDate = null;
