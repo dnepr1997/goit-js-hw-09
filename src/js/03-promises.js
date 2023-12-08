@@ -12,7 +12,7 @@ function hendleForn(event) {
     let newAmount = +(amount.value)
     
     
-    for (let i = 1; i < newAmount; i++) {
+    for (let i = 1; i <= newAmount; i++) {
         
        createPromise(i, newDelay) 
         .then(({ position, delay }) => {
@@ -23,6 +23,7 @@ function hendleForn(event) {
   });
         newDelay += newStep
     }
+    form.reset()
 }
 function createPromise(position, delay) {
     return new Promise((resolve, reject) => {
