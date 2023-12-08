@@ -23,7 +23,9 @@ function hendleForn(event) {
   });
         newDelay += newStep
     }
-    form.reset()
+    setTimeout(() => {
+       form.reset()
+    }, 1000) 
 }
 function createPromise(position, delay) {
     return new Promise((resolve, reject) => {
